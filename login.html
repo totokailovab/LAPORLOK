@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin - LAPORLOK Kab Sidoarjo JATIM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+        }
+
+        .form-signin {
+            width: 100%;
+            max-width: 330px;
+            padding: 15px;
+            margin: auto;
+        }
+
+        .form-signin .form-floating:focus-within {
+            z-index: 2;
+        }
+
+        .form-signin input[type="email"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .form-signin input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .brand-name {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0d6efd;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert {
+            display: none;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="text-center">
+    <main class="form-signin">
+        <div class="text-center mb-4">
+            <div class="d-flex align-items-center justify-content-center">
+                <img src="image/logo.svg" alt="LAPORLOK" class="img-fluid" style="max-height: 60px;">
+                <span class="ms-3 h3 mb-0">LAPORLOK Kab Sidoarjo JATIM</span>
+            </div>
+        </div>
+        <h1 class="h3 mb-3 fw-normal">Login Admin</h1>
+
+        <div class="alert alert-danger" id="errorAlert" role="alert"></div>
+
+        <form id="loginForm">
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" required>
+                <label for="emailInput">Email</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="passwordInput" placeholder="Password" required>
+                <label for="passwordInput">Password</label>
+            </div>
+
+            <button class="w-100 btn btn-lg btn-primary" type="submit">
+                <span class="spinner-border spinner-border-sm d-none" id="loadingSpinner" role="status"></span>
+                <span id="buttonText">Login</span>
+            </button>
+
+            <p class="mt-3">
+                <a href="index.html" class="text-decoration-none">← Kembali ke Beranda</a>
+            </p>
+        </form>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCvQrWfDbIgv0mUfkXs9HnY8-0xkuTx11w",
+            authDomain: "fir-67ac6.firebaseapp.com",
+            projectId: "fir-67ac6",
+            storageBucket: "fir-67ac6.firebasestorage.app",
+            messagingSenderId: "550072969983",
+            appId: "1:550072969983:web:92eda0bba3afc01bfbfaca",
+            measurementId: "G-NMY8SNVEDN"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const analytics = firebase.analytics();
+        const auth = firebase.auth();
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const buttonText = document.getElementById('buttonText');
+            const errorAlert = document.getElementById('errorAlert');
+
+            // Show loading state
+            loadingSpinner.classList.remove('d-none');
+            buttonText.textContent = 'Logging in...';
+            errorAlert.style.display = 'none';
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    window.location.href = 'admin/index.html';
+                })
+                .catch((error) => {
+                    errorAlert.textContent = error.message;
+                    errorAlert.style.display = 'block';
+                    loadingSpinner.classList.add('d-none');
+                    buttonText.textContent = 'Login';
+                });
+        });
+
+        // Check if user is already logged in
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                window.location.href = 'admin/index.html';
+            }
+        });
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            const errorAlert = document.getElementById('errorAlert');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const buttonText = document.getElementById('buttonText');
+
+            // Show loading state
+            loadingSpinner.classList.remove('d-none');
+            buttonText.textContent = 'Logging in...';
+            errorAlert.style.display = 'none';
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                window.location.href = 'admin/index.html';
+            } catch (error) {
+                console.error('Login error:', error);
+                errorAlert.textContent = 'Email atau password salah';
+                errorAlert.style.display = 'block';
+            } finally {
+                loadingSpinner.classList.add('d-none');
+                buttonText.textContent = 'Login';
+            }
+        });
+    </script>
+</body>
+</html>
